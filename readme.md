@@ -16,3 +16,8 @@ docker run -d \
 
 - Step 2: 
 Run `psqlinit.sql` followed by `initdata.sql`
+
+- Connect:
+```bash
+$ psql -h localhost -p 5432 -U admin -d appdb
+``` 
