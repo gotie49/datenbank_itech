@@ -13,5 +13,8 @@ $ psql -h localhost -p 5432 -U admin -d krautundrueben
 ``` 
 
 - Step 3: 
-Run `psqlinit.sql` followed by `initdata.sql`
+```bash
+$ docker exec -i postgres psql -U admin -d krautundrueben < psqlinit.sql
+$ docker exec -i postgres psql -U admin -d krautundrueben < initdata.sql
+```
 

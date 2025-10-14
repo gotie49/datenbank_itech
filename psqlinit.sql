@@ -1,8 +1,4 @@
-/* NOTE: modified for PSQL */
-DROP DATABASE IF EXISTS krautundrueben;
-CREATE DATABASE krautundrueben;
-USE krautundrueben;
-
+/* NOTE: make sure you are inside krautundrueben database */
 
 CREATE TABLE KUNDE (
     KUNDENNR        INTEGER NOT NULL,
