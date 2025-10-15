@@ -8,8 +8,13 @@ docker run -d --name postgres -e POSTGRES_USER=admin -e POSTGRES_PASSWORD=admin 
 ```
 - Step 2 (inside repository): 
 ```bash
-docker exec -i postgres psql -U admin -d krautundrueben < psqlinit.sql
-docker exec -i postgres psql -U admin -d krautundrueben < initdata.sql
+docker exec -i postgres psql -U admin -d krautundrueben < createTable.sql
+docker exec -i postgres psql -U admin -d krautundrueben < insertTestData.sql
+```
+- Step 3 (Entwicklungsphase I):
+```bash
+docker exec -i postgres psql -U admin -d krautundrueben < createTableRezept.sql
+docker exec -i postgres psql -U admin -d krautundrueben < insertTestDataRezept.sql
 ```
 - Connect:
 ```bash
@@ -19,3 +24,6 @@ docker exec -it postgres psql -U admin -d krautundrueben
 ```bash
 docker start -ai postgres
 ```
+
+- Entity Relationship Diagram (including Rezept Tables):
+![ERD](docs/entity_relationship_diagram.png)
