@@ -49,7 +49,7 @@ SELECT REZEPT.rezept_id, SUM(ZUTAT.kalorien * REZEPT_ZUTAT.menge) AS rezept_kalo
     JOIN REZEPT_ZUTAT ON REZEPT_ZUTAT.rezept_id  = REZEPT.rezept_id
     JOIN ZUTAT ON ZUTAT.zutatennr = REZEPT_ZUTAT.zutatennr
     GROUP BY REZEPT.rezept_id
-    HAVING SUM(ZUTAT.kalorien * REZEPT_ZUTAT.menge) > $KALORIENMENGE;
+    HAVING SUM(ZUTAT.kalorien * REZEPT_ZUTAT.menge) < $KALORIENMENGE;
 
 /* Rezepte mit wenigen Zutaten finden: Wählt alle Rezepte aus, die weniger als fünf Zutaten enthalten. */
 /* Gerrit */
@@ -75,3 +75,45 @@ SELECT REZEPT.name, COUNT(*) as anzahl_zutaten
 /* Gerrit: LEFT JOIN, Aggregatfunktionen (SUM, COUNT) */
 
 /* Zugriffskonzept und DSGVO-konforme Datenverarbeitung implementieren: Verwendet Rollen, Views, Trigger und Stored Procedures. */
+
+/* Stored Procedures */
+/* NOTE: In PSQL müssen wir FUNCTIONs nutzen um Rückgabewerte zu bekommen */
+
+/* Zutaten für ein Rezept abrufen (KUECHE) */
+CREATE OR REPLACE FUNCTION GetZutatenFuerRezept(rezept_name VARCHAR)
+RETURNS TABLE (
+    name VARCHAR,
+    zutat VARCHAR,
+    menge NUMERIC,
+    einheit VARCHAR
+    )
+    LANGUAGE plpgsql
+    AS $$
+    BEGIN
+	RETURN QUERY
+	SELECT r.name, z.bezeichnung, rz.menge, z.einheit
+	FROM rezept r
+	JOIN rezept_zutat rz ON r.rezept_id = rz.rezept_id
+	JOIN zutat z ON rz.zutatennr = z.zutatennr
+	WHERE r.name = rezept_name;
+    END;
+    $$;
+/* Usage */
+SELECT * FROM GetZutatenFuerRezept('Zucchini-Pfanne');
+
+/* Neue Bestellung automatisch anlegen (VERKAUF)*/
+
+/* Views */
+/* Rezepte mit Ernährungskategorie und Kalorien */
+/* DSGVO-konforme Kundenanzeige */
+
+/* Trigger*/
+/* Änderungen an Kundendaten protokollieren(DSGVO) */
+/* Kundenanonymisierung bei Löschmarkierung(DSGVO) */
+
+/* Rollen: 
+ 1. KUECHE: Zugriff auf Rezepte und Zutaten.
+ 2. VERKAUF: Zugriff auf Kunden und Bestellungen.
+ 3. EINKAUF: Zugriff auf Lieferanten und Zutatenpreise.
+ 4. ADMIN(IT): Zugriff auf das gesamte Datenbanksystem.
+*/
