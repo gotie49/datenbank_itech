@@ -1,3 +1,4 @@
+SET ROLE ADMIN;
 INSERT INTO ERNAEHRUNGSKATEGORIE (BEZEICHNUNG, BESCHREIBUNG) VALUES ('Vegetarisch', 'Rezepte ohne Fleisch'), 
 ('Vegan', 'Rezepte ohne tierische Produkte'), ('Fleischgerichte', 'Rezepte mit Fleisch'), 
 ('Frühstück', 'Rezepte für das Frühstück'), ('Desserts', 'Süße Rezepte zum Abschluss');
@@ -27,3 +28,4 @@ INSERT INTO REZEPT_ZUTAT (REZEPT_ID, ZUTATENNR, MENGE, EINHEIT) VALUES
 (5, 6408, 2, 'Packung'),
 (5, 7043, 2, 'Würfel'),
 (5, 6300, 1, 'Dose');  
+RESET ROLE;
