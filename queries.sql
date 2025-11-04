@@ -88,7 +88,7 @@ RETURNS TABLE (
     einheit VARCHAR
     )
     LANGUAGE plpgsql
-    AS $$
+    AS $$ 
     BEGIN
 	RETURN QUERY
 	SELECT r.name, z.bezeichnung, rz.menge, z.einheit
@@ -101,7 +101,45 @@ RETURNS TABLE (
 /* Usage */
 SELECT * FROM GetZutatenFuerRezept('Zucchini-Pfanne');
 
-/* Neue Bestellung automatisch anlegen (VERKAUF)*/
+/* Neue Bestellung automatisch anlegen (VERKAUF) */
+/*NOTE: funktioniert nur für valide kundennr */
+CREATE OR REPLACE PROCEDURE CreateBestellungFuerKunde(kundennr INT)
+    LANGUAGE plpgsql
+    AS $$
+    BEGIN
+	INSERT INTO bestellung (kundennr, bestelldatum, rechnungsbetrag)
+	VALUES (kundennr, CURRENT_DATE, 0);
+    END;
+    $$;
+/* Usage */
+CALL CreateBestellungFuerKunde(2001);
+
+/* Rechungsbetrag automatisch aktualisieren nachdem Bestellungszutat hinzugefügt worden ist */
+CREATE OR REPLACE FUNCTION update_bestellung_betrag()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    UPDATE bestellung b
+    SET rechnungsbetrag = (
+        SELECT SUM(z.nettopreis * bz.menge)
+        FROM bestellungzutat bz
+        JOIN zutat z ON bz.zutatennr = z.zutatennr
+        WHERE bz.bestellnr = b.bestellnr
+    )
+    WHERE b.bestellnr = NEW.bestellnr;
+
+    RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER trg_update_bestellung_betrag
+AFTER INSERT OR UPDATE ON bestellungzutat
+FOR EACH ROW
+EXECUTE FUNCTION update_bestellung_betrag();
+
+/* Usage */
+INSERT INTO BESTELLUNGZUTAT(BESTELLNR, ZUTATENNR, MENGE) VALUES (14, 1010, 10);
 
 /* Views */
 /* Rezepte mit Ernährungskategorie und Kalorien */
@@ -122,10 +160,98 @@ ORDER BY r.name;
 SELECT * FROM v_rezepte_ernahrung_kalorien;
 
 /* DSGVO-konforme Kundenanzeige */
+CREATE OR REPLACE VIEW v_kunde_dsgvo AS
+SELECT 
+    kundennr,
+    CONCAT(LEFT(nachname, 1), '***') AS nachname_maskiert,
+    CONCAT(LEFT(vorname, 1), '***') AS vorname_maskiert,
+    EXTRACT(YEAR FROM geburtsdatum)::INT AS geburtsjahr,
+    plz,
+    ort
+FROM kunde;
+
+/* Usage */
+SELECT * FROM v_kunde_dsgvo;
 
 /* Trigger*/
-/* Änderungen an Kundendaten protokollieren(DSGVO) */
-/* Kundenanonymisierung bei Löschmarkierung(DSGVO) */
+/* Änderungen an Kundendaten protokollieren (DSGVO) */
+CREATE TABLE kunde_audit (
+    audit_id SERIAL PRIMARY KEY,
+    kundennr INTEGER NOT NULL,
+    nachname VARCHAR(50),
+    vorname VARCHAR(50),
+    geburtsdatum DATE,
+    strasse VARCHAR(50),
+    hausnr VARCHAR(6),
+    plz VARCHAR(5),
+    ort VARCHAR(50),
+    telefon VARCHAR(25),
+    email VARCHAR(50),
+    geaendert_am TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    aktion TEXT NOT NULL -- 'UPDATE'
+);
+
+CREATE OR REPLACE FUNCTION trg_fnc_kunde_audit()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    IF TG_OP = 'UPDATE' THEN
+        INSERT INTO kunde_audit (
+            kundennr, nachname, vorname, geburtsdatum,
+            strasse, hausnr, plz, ort, telefon, email, aktion
+        )
+        VALUES (
+            OLD.kundennr, OLD.nachname, OLD.vorname, OLD.geburtsdatum,
+            OLD.strasse, OLD.hausnr, OLD.plz, OLD.ort, OLD.telefon, OLD.email,
+            TG_OP
+        );
+    END IF;
+    RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER trg_kunde_audit
+AFTER UPDATE ON kunde
+FOR EACH ROW
+EXECUTE FUNCTION trg_fnc_kunde_audit();
+
+/* Usage */
+UPDATE kunde SET strasse = 'Neue Straße' WHERE kundennr = 2001;
+
+/* Kundenanonymisierung bei Löschmarkierung (DSGVO) */
+ALTER TABLE kunde
+ADD COLUMN geloescht BOOLEAN DEFAULT FALSE;
+
+CREATE OR REPLACE FUNCTION trg_fnc_kunde_anonymisieren()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    IF NEW.geloescht = TRUE AND OLD.geloescht = FALSE THEN
+        UPDATE kunde
+        SET nachname = 'ANONYM',
+            vorname = 'ANONYM',
+            geburtsdatum = NULL,
+            strasse = NULL,
+            hausnr = NULL,
+            plz = NULL,
+            ort = NULL,
+            telefon = NULL,
+            email = CONCAT('anon', kundennr, '@example.com')
+        WHERE kundennr = NEW.kundennr;
+    END IF;
+    RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER trg_kunde_anonymisieren
+AFTER UPDATE OF geloescht ON kunde
+FOR EACH ROW
+EXECUTE FUNCTION trg_fnc_kunde_anonymisieren();
+
+/* Usage */
+UPDATE kunde SET geloescht = TRUE WHERE kundennr = 2001;
 
 /* Rollen: 
  1. KUECHE: Zugriff auf Rezepte und Zutaten.
