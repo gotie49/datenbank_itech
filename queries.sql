@@ -105,6 +105,22 @@ SELECT * FROM GetZutatenFuerRezept('Zucchini-Pfanne');
 
 /* Views */
 /* Rezepte mit Ernährungskategorie und Kalorien */
+CREATE OR REPLACE VIEW v_rezepte_ernahrung_kalorien AS
+SELECT 
+    r.rezept_id,
+    r.name AS rezept_name,
+    ek.bezeichnung AS ernahrungskategorie,
+    ROUND(SUM(z.kalorien * rz.menge / 100.0), 2) AS gesamt_kalorien
+FROM rezept r
+JOIN ernaehrungskategorie ek ON r.kategorie_id = ek.kategorie_id
+JOIN rezept_zutat rz ON r.rezept_id = rz.rezept_id
+JOIN zutat z ON rz.zutatennr = z.zutatennr
+GROUP BY r.rezept_id, r.name, ek.bezeichnung
+ORDER BY r.name;
+
+/* Usage */
+SELECT * FROM v_rezepte_ernahrung_kalorien;
+
 /* DSGVO-konforme Kundenanzeige */
 
 /* Trigger*/
