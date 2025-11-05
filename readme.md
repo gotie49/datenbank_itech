@@ -29,6 +29,6 @@ docker start -ai postgres
 ![ERD](docs/entity_relationship_diagram.png)
 
 - TODO:
- [ ] ERD aktualisieren
- [ ] queries.sql in DDL, DCL, DML und DQL unterteilen
- [ ] skript für automatischen aufsetzen der db mit docker befehlen
+ - [ ] ERD aktualisieren
+ - [ ] queries.sql in DDL, DCL, DML und DQL unterteilen
+ - [ ] skript für automatischen aufsetzen der db mit docker befehlen
