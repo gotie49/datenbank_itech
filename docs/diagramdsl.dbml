@@ -1,0 +1,86 @@
+Table KUNDE {
+  KUNDENNR integer [pk, not null]
+  NACHNAME varchar(50)
+  VORNAME varchar(50)
+  GEBURTSDATUM date
+  STRASSE varchar(50)
+  HAUSNR varchar(6)
+  PLZ varchar(5)
+  ORT varchar(50)
+  TELEFON varchar(25)
+  EMAIL varchar(50)
+  GELOESCHT boolean [default: false]
+}
+
+Table ZUTAT {
+  ZUTATENNR integer [pk, not null]
+  BEZEICHNUNG varchar(50)
+  EINHEIT varchar(25)
+  NETTOPREIS decimal(10,2)
+  BESTAND integer
+  LIEFERANT integer [ref: > LIEFERANT.LIEFERANTENNR]
+  KALORIEN integer
+  KOHLENHYDRATE decimal(10,2)
+  PROTEIN decimal(10,2)
+}
+
+Table LIEFERANT {
+  LIEFERANTENNR integer [pk, not null]
+  LIEFERANTENNAME varchar(50)
+  STRASSE varchar(50)
+  HAUSNR varchar(6)
+  PLZ varchar(5)
+  ORT varchar(50)
+  TELEFON varchar(25)
+  EMAIL varchar(50)
+}
+
+Table BESTELLUNG {
+  BESTELLNR serial [pk]
+  KUNDENNR integer [ref: > KUNDE.KUNDENNR]
+  BESTELLDATUM date
+  RECHNUNGSBETRAG decimal(10,2)
+}
+
+Table BESTELLUNGZUTAT {
+  BESTELLNR integer [pk, ref: > BESTELLUNG.BESTELLNR]
+  ZUTATENNR integer [pk, ref: > ZUTAT.ZUTATENNR]
+  MENGE integer
+}
+
+Table ERNAEHRUNGSKATEGORIE {
+  KATEGORIE_ID serial [pk]
+  BEZEICHNUNG varchar(50)
+  BESCHREIBUNG text
+}
+
+Table REZEPT {
+  REZEPT_ID serial [pk]
+  NAME varchar(50)
+  BESCHREIBUNG text
+  KATEGORIE_ID int [ref: > ERNAEHRUNGSKATEGORIE.KATEGORIE_ID]
+  ERSTELLUNGSDATUM date
+}
+
+Table REZEPT_ZUTAT {
+  REZEPT_ID int [pk, ref: > REZEPT.REZEPT_ID]
+  ZUTATENNR int [pk, ref: > ZUTAT.ZUTATENNR]
+  MENGE decimal(10,2)
+  EINHEIT varchar(20)
+}
+
+Table KUNDE_AUDIT {
+  AUDIT_ID serial [pk]
+  KUNDENNR integer
+  NACHNAME varchar(50)
+  VORNAME varchar(50)
+  GEBURTSDATUM date
+  STRASSE varchar(50)
+  HAUSNR varchar(6)
+  PLZ varchar(5)
+  ORT varchar(50)
+  TELEFON varchar(25)
+  EMAIL varchar(50)
+  GEAENDERT_AM timestamp [default: `current_timestamp`]
+  AKTION text
+}
