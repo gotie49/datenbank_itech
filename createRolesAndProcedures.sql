@@ -209,3 +209,13 @@ GRANT ALL PRIVILEGES ON ERNAEHRUNGSKATEGORIE TO ADMIN;
 GRANT ALL PRIVILEGES ON REZEPT TO ADMIN;
 GRANT ALL PRIVILEGES ON REZEPT_ZUTAT TO ADMIN;
 
+
+/* Usage examples of functions, procedures and views:
+SELECT * FROM get_zutaten_fuer_rezept('Zucchini-Pfanne');
+CALL create_bestellung_fuer_kunde(2001);
+SELECT * FROM v_rezepte_ernahrung_kalorien;
+SELECT * FROM v_kunde_dsgvo;
+UPDATE kunde SET strasse = 'Neue Strasse' WHERE kundennr = 2001;
+INSERT INTO BESTELLUNGZUTAT(BESTELLNR, ZUTATENNR, MENGE) VALUES (14, 1010, 10);
+UPDATE kunde SET geloescht = TRUE WHERE kundennr = 2001;
+*/
