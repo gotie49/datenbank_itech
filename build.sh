@@ -8,6 +8,8 @@ DB_PASS="admin"
 PG_VERSION="17"
 VOLUME_NAME="pgdata"
 
+CSV_DIR="./csv"   # <-- CSV directory on HOST MACHINE
+
 if [ "$(docker ps -aq -f name=^${CONTAINER_NAME}$)" ]; then
   echo "container '$CONTAINER_NAME' already exists. removing..."
   docker rm -f "$CONTAINER_NAME" >/dev/null
@@ -42,10 +44,4 @@ for sql in createTable.sql createTableRezept.sql createRolesAndProcedures.sql; d
   docker exec -i "$CONTAINER_NAME" psql -U "$DB_USER" -d "$DB_NAME" < "$sql"
 done
 
-echo "inserting test data..."
-for sql in insertTestData.sql insertTestDataRezept.sql; do
-  echo "   -> executing $sql"
-  docker exec -i "$CONTAINER_NAME" psql -U "$DB_USER" -d "$DB_NAME" < "$sql"
-done
-
-echo "postgresql is ready!"
+echo "postgresql is fully ready!"
