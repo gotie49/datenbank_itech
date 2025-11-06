@@ -21,15 +21,18 @@ SELECT ERNAEHRUNGSKATEGORIE.bezeichnung, COUNT(*) as anzahl_rezepte
     GROUP BY ERNAEHRUNGSKATEGORIE.bezeichnung;
 
 /* Durchschnittliche Naehrwerte berechnen: Berechnet die durchschnittlichen Naehrwerte (Kalorien, Proteine, Kohlenhydrate, Fett etc.) pro Bestellung für alle Bestellungen eines Kunden. */
-SELECT BESTELLUNG.bestellnr, 
-    SUM(ZUTAT.kalorien * BESTELLUNGZUTAT.menge) as kalorien, 
-    SUM(ZUTAT.kohlenhydrate * BESTELLUNGZUTAT.menge) as kohlenhydrate, 
-    SUM(ZUTAT.protein * BESTELLUNGZUTAT.menge) as protein 
-FROM BESTELLUNG
-    JOIN BESTELLUNGZUTAT ON BESTELLUNG.bestellnr = BESTELLUNGZUTAT.bestellnr
-    JOIN ZUTAT ON BESTELLUNGZUTAT.zutatennr = ZUTAT.zutatennr
-    WHERE BESTELLUNG.kundennr IN ('$BESTELLUNG-KUNDENNR')
-    GROUP BY BESTELLUNG.bestellnr;
+/* Ayman */
+    SELECT AVG(protein) as avg_protein, AVG(kalorien) as avg_kalorien, AVG(kohlenhydrate) as avg_kohle FROM (
+	SELECT BESTELLUNG.bestellnr, 
+    		SUM(ZUTAT.kalorien * BESTELLUNGZUTAT.menge) as kalorien, 
+    		SUM(ZUTAT.kohlenhydrate * BESTELLUNGZUTAT.menge) as kohlenhydrate, 
+    		SUM(ZUTAT.protein * BESTELLUNGZUTAT.menge) as protein
+	FROM BESTELLUNG
+    		JOIN BESTELLUNGZUTAT ON BESTELLUNG.bestellnr = BESTELLUNGZUTAT.bestellnr
+    		JOIN ZUTAT ON BESTELLUNGZUTAT.zutatennr = ZUTAT.zutatennr
+    		WHERE BESTELLUNG.kundennr IN ('$BESTELLUNG-KUNDENNR')
+    		GROUP BY BESTELLUNG.bestellnr
+	) AS order_sum;
 
 /* Unverknuepfte Zutaten identifizieren: Findet alle Zutaten, die bisher keinem Rezept zugeordnet sind. */
 SELECT ZUTAT.zutatennr, ZUTAT.bezeichnung 
