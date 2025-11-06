@@ -63,8 +63,40 @@ SELECT REZEPT.name, COUNT(*) as anzahl_zutaten
 
 /* Eigenstaendige Abfragen entwickeln: Erstellt mindestens drei weitere sinnvolle Abfragen, die den Rezept-Service erweitern oder optimieren. */
 
-/* Verwendung komplexer SQL-Elemente: Stellt sicher, dass ihr alle der folgenden SQL-Elemente mindestens einmal verwendet: INNER JOIN, LEFT/RIGHT JOIN, Subselects, Aggregatfunktionen */
-/* Gerrit: LEFT JOIN, Aggregatfunktionen (SUM, COUNT) */
+/* Preis pro Rezept Berechnen */
+SELECT 
+    R.REZEPT_ID,
+    R.NAME AS REZEPTNAME,
+    SUM(Z.NETTOPREIS * RZ.MENGE) AS REZEPTKOSTEN
+FROM REZEPT R
+JOIN REZEPT_ZUTAT RZ ON R.REZEPT_ID = RZ.REZEPT_ID
+JOIN ZUTAT Z ON RZ.ZUTATENNR = Z.ZUTATENNR
+GROUP BY R.REZEPT_ID
+ORDER BY REZEPTKOSTEN ASC;
 
-/* Zugriffskonzept und DSGVO-konforme Datenverarbeitung implementieren: Verwendet Rollen, Views, Trigger und Stored Procedures. */
+/* Anzahl Bestellungen */
+SELECT
+    R.NAME AS rezeptname,
+    COUNT(*) AS anzahl_bestellungen
+FROM BESTELLUNGZUTAT BZ
+JOIN REZEPT_ZUTAT RZ ON BZ.ZUTATENNR = RZ.ZUTATENNR
+JOIN REZEPT R ON RZ.REZEPT_ID = R.REZEPT_ID
+GROUP BY R.REZEPT_ID
+ORDER BY anzahl_bestellungen DESC;
+
+/* Zutaten, die zwar im Bestand knapp sind, aber noch in Rezepten vorkommen (wichtig für Einkauf) */
+SELECT 
+    Z.ZUTATENNR,
+    Z.BEZEICHNUNG,
+    Z.BESTAND,
+    R.NAME AS REZEPTNAME
+FROM ZUTAT Z
+LEFT JOIN REZEPT_ZUTAT RZ ON Z.ZUTATENNR = RZ.ZUTATENNR
+LEFT JOIN REZEPT R ON RZ.REZEPT_ID = R.REZEPT_ID
+WHERE Z.BESTAND < '$BESTAND_SCHWELLE'
+ORDER BY Z.BESTAND ASC;
+
+/* Verwendung komplexer SQL-Elemente: Stellt sicher, dass ihr alle der folgenden SQL-Elemente mindestens einmal verwendet: INNER JOIN, LEFT/RIGHT JOIN, Subselects, Aggregatfunktionen */
+/* INNER JOIN, LEFT JOIN, Subselects, Aggregatfunktionen (SUM, COUNT, AVG) */
+
 
