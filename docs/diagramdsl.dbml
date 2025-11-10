@@ -42,9 +42,9 @@ Table BESTELLUNG {
   RECHNUNGSBETRAG decimal(10,2)
 }
 
-Table BESTELLUNGZUTAT {
+Table BESTELLUNGREZEPT {
   BESTELLNR integer [pk, ref: > BESTELLUNG.BESTELLNR]
-  ZUTATENNR integer [pk, ref: > ZUTAT.ZUTATENNR]
+  REZEPT_ID integer [pk, ref: > REZEPT.REZEPT_ID]
   MENGE integer
 }
 
