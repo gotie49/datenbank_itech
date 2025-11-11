@@ -39,7 +39,7 @@ until docker exec "$CONTAINER_NAME" pg_isready -U "$DB_USER" -d "$DB_NAME" >/dev
 done
 
 echo "creating tables, procedures, functions, and views..."
-for sql in createTable.sql createTableRezept.sql createRolesAndProcedures.sql; do
+for sql in createTable.sql createRolesAndProcedures.sql; do
   echo "   -> executing $sql"
   docker exec -i "$CONTAINER_NAME" psql -U "$DB_USER" -d "$DB_NAME" < "$sql"
 done

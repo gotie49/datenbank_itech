@@ -9,7 +9,6 @@ echo "Inserting test data..."
 
 SQL_FILES=(
   "insertTestData.sql"
-  "insertTestDataRezept.sql"
 )
 
 for sql in "${SQL_FILES[@]}"; do
