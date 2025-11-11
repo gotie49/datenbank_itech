@@ -22,17 +22,25 @@ SELECT ERNAEHRUNGSKATEGORIE.bezeichnung, COUNT(*) as anzahl_rezepte
 
 /* Durchschnittliche Naehrwerte berechnen: Berechnet die durchschnittlichen Naehrwerte (Kalorien, Proteine, Kohlenhydrate, Fett etc.) pro Bestellung für alle Bestellungen eines Kunden. */
 /* Ayman */
-    SELECT AVG(protein) as avg_protein, AVG(kalorien) as avg_kalorien, AVG(kohlenhydrate) as avg_kohle FROM (
-	SELECT BESTELLUNG.bestellnr, 
-    		SUM(ZUTAT.kalorien * BESTELLUNGZUTAT.menge) as kalorien, 
-    		SUM(ZUTAT.kohlenhydrate * BESTELLUNGZUTAT.menge) as kohlenhydrate, 
-    		SUM(ZUTAT.protein * BESTELLUNGZUTAT.menge) as protein
-	FROM BESTELLUNG
-    		JOIN BESTELLUNGZUTAT ON BESTELLUNG.bestellnr = BESTELLUNGZUTAT.bestellnr
-    		JOIN ZUTAT ON BESTELLUNGZUTAT.zutatennr = ZUTAT.zutatennr
-    		WHERE BESTELLUNG.kundennr IN ('$BESTELLUNG-KUNDENNR')
-    		GROUP BY BESTELLUNG.bestellnr
-	) AS order_sum;
+SELECT 
+    AVG(protein)        AS avg_protein, 
+    AVG(kalorien)       AS avg_kalorien, 
+    AVG(kohlenhydrate)  AS avg_kohle
+FROM (
+    SELECT b.bestellnr,
+           SUM(z.kalorien      * rz.menge * br.menge) AS kalorien,
+           SUM(z.kohlenhydrate * rz.menge * br.menge) AS kohlenhydrate,
+           SUM(z.protein       * rz.menge * br.menge) AS protein
+    FROM bestellung b
+    JOIN bestellungrezept br 
+        ON b.bestellnr = br.bestellnr
+    JOIN rezept_zutat rz 
+        ON br.rezept_id = rz.rezept_id
+    JOIN zutat z 
+        ON rz.zutatennr = z.zutatennr
+    WHERE b.kundennr IN ('$BESTELLUNG-KUNDENNR')
+    GROUP BY b.bestellnr
+) AS order_sum;
 
 /* Unverknuepfte Zutaten identifizieren: Findet alle Zutaten, die bisher keinem Rezept zugeordnet sind. */
 SELECT ZUTAT.zutatennr, ZUTAT.bezeichnung 
@@ -79,13 +87,13 @@ ORDER BY REZEPTKOSTEN ASC;
 
 /* Anzahl Bestellungen */
 SELECT
-    R.NAME AS rezeptname,
-    COUNT(*) AS anzahl_bestellungen
-FROM BESTELLUNGZUTAT BZ
-JOIN REZEPT_ZUTAT RZ ON BZ.ZUTATENNR = RZ.ZUTATENNR
-JOIN REZEPT R ON RZ.REZEPT_ID = R.REZEPT_ID
-GROUP BY R.REZEPT_ID
+    r.name AS rezeptname,
+    SUM(br.menge) AS anzahl_bestellungen
+FROM bestellungrezept br
+JOIN rezept r ON br.rezept_id = r.rezept_id
+GROUP BY r.rezept_id, r.name
 ORDER BY anzahl_bestellungen DESC;
+
 
 /* Zutaten, die zwar im Bestand knapp sind, aber noch in Rezepten vorkommen (wichtig für Einkauf) */
 SELECT 
