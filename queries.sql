@@ -23,9 +23,9 @@ SELECT ERNAEHRUNGSKATEGORIE.bezeichnung, COUNT(*) as anzahl_rezepte
 /* Durchschnittliche Naehrwerte berechnen: Berechnet die durchschnittlichen Naehrwerte (Kalorien, Proteine, Kohlenhydrate, Fett etc.) pro Bestellung für alle Bestellungen eines Kunden. */
 /* Ayman */
 SELECT 
-    AVG(protein)        AS avg_protein, 
-    AVG(kalorien)       AS avg_kalorien, 
-    AVG(kohlenhydrate)  AS avg_kohle
+    ROUND(AVG(protein),2)        AS avg_protein, 
+    ROUND(AVG(kalorien),2)       AS avg_kalorien, 
+    ROUND(AVG(kohlenhydrate),2)  AS avg_kohle
 FROM (
     SELECT b.bestellnr,
            SUM(z.kalorien      * rz.menge * br.menge) AS kalorien,
