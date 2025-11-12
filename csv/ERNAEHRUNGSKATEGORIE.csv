@@ -1,3 +1,6 @@
-﻿kategorie_id;BEZEICHNUNG;BESCHREIBUNG
-1;Vegan;Rezepte frei von tierischen Produkten
-2;Low Carb;Kohlenhydratreduzierte Rezepte
+﻿KATEGORIE_ID;BEZEICHNUNG;BESCHREIBUNG
+1;Vegetarisch;Rezepte ohne Fleisch
+2;Vegan;Rezepte ohne tierische Produkte
+3;Fleischgerichte;Rezepte mit Fleisch
+4;Frühstück;Rezepte für das Frühstück
+5;Desserts;Süße Rezepte zum Abschluss

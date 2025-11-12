@@ -1,3 +1,10 @@
 ﻿KUNDENNR;NACHNAME;VORNAME;GEBURTSDATUM;STRASSE;HAUSNR;PLZ;ORT;TELEFON;EMAIL;geloescht
-1;Müller;Anna;1990-05-12;Hauptstraße;12;10115;Berlin;03012345;anna.mueller@test.de;FALSE
-2;Schmidt;Peter;1985-09-23;Gartenweg;3;50667;Köln;022112345;p.schmidt@test.de;FALSE
+2001;Wellensteyn;Kira;1990-05-05;Eppendorfer Landstrasse;104;20249;Hamburg;040/443322;k.wellensteyn@yahoo.de;false
+2002;Foede;Dorothea;2000-03-24;Ohmstraße;23;22765;Hamburg;040/543822;d.foede@web.de;false
+2003;Leberer;Sigrid;1989-09-21;Bilser Berg;6;20459;Hamburg;0175/1234588;sigrid@leberer.de;false
+2004;Soerensen;Hanna;1974-04-03;Alter Teichweg;95;22049;Hamburg;040/634578;h.soerensen@yahoo.de;false
+2005;Schnitter;Marten;1964-04-17;Stübels;10;22835;Barsbüttel;0176/447587;schni_mart@gmail.com;false
+2006;Maurer;Belinda;1978-09-09;Grotelertwiete;4a;21075;Hamburg;040/332189;belinda1978@yahoo.de;false
+2007;Gessert;Armin;1978-01-29;Küstersweg;3;21079;Hamburg;040/67890;armin@gessert.de;false
+2008;Haessig;Jean-Marc;1982-08-30;Neugrabener Bahnhofstraße;30;21149;Hamburg;0178-67013390;jm@haessig.de;false
+2009;Urocki;Eric;1999-12-04;Elbchaussee;228;22605;Hamburg;0152-96701390;urocki@outlook.de;false
