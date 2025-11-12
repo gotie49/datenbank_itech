@@ -15,4 +15,4 @@ docker start -ai postgres
 ```
 
 - Entity Relationship Diagram (including Rezept Tables):
-![ERD](docs/entity_relationship_diagramv2.png)
+![ERD](docs/entity_relationship_diagramv4.png)
