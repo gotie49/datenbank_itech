@@ -99,6 +99,48 @@ LEFT JOIN REZEPT R ON RZ.REZEPT_ID = R.REZEPT_ID
 WHERE Z.BESTAND < '$BESTAND_SCHWELLE'
 ORDER BY Z.BESTAND ASC;
 
+/* Allergene Queries */
+/* Allergene in einem Rezept */
+SELECT 
+    r.REZEPT_ID,
+    r.NAME AS rezept_name,
+    a.ALLERGEN_ID,
+    a.BEZEICHNUNG AS allergen_name
+FROM REZEPT r
+JOIN REZEPT_ALLERGENE ra ON r.REZEPT_ID = ra.REZEPT_ID
+JOIN ALLERGENE a ON ra.ALLERGEN_ID = a.ALLERGEN_ID
+WHERE r.REZEPT_ID = '$REZEPT_ID';
+
+/* Liste alle Allergene nach Ernaehrungskategorie auf */
+SELECT 
+    e.BEZEICHNUNG AS kategorie,
+    r.NAME AS rezept_name,
+    a.BEZEICHNUNG AS allergen
+FROM ERNAEHRUNGSKATEGORIE e
+JOIN REZEPT r ON e.KATEGORIE_ID = r.KATEGORIE_ID
+JOIN REZEPT_ALLERGENE ra ON r.REZEPT_ID = ra.REZEPT_ID
+JOIN ALLERGENE a ON ra.ALLERGEN_ID = a.ALLERGEN_ID
+ORDER BY e.BEZEICHNUNG, r.NAME;
+
+/* Finde Rezepte ohne Allergene */
+SELECT 
+    r.REZEPT_ID,
+    r.NAME
+FROM REZEPT r
+WHERE r.REZEPT_ID NOT IN (
+    SELECT REZEPT_ID FROM REZEPT_ALLERGENE
+);
+
+/* Finde Rezepte mit bestimmten Allergen */
+SELECT 
+    r.REZEPT_ID,
+    r.NAME AS rezept_name,
+    a.BEZEICHNUNG AS allergen_name
+FROM REZEPT r
+JOIN REZEPT_ALLERGENE ra ON r.REZEPT_ID = ra.REZEPT_ID
+JOIN ALLERGENE a ON ra.ALLERGEN_ID = a.ALLERGEN_ID
+WHERE a.BEZEICHNUNG = '$ALLERGEN_BEZEICHNUNG';
+
 /* Verwendung komplexer SQL-Elemente: Stellt sicher, dass ihr alle der folgenden SQL-Elemente mindestens einmal verwendet: INNER JOIN, LEFT/RIGHT JOIN, Subselects, Aggregatfunktionen */
 /* INNER JOIN, LEFT JOIN, Subselects, Aggregatfunktionen (SUM, COUNT, AVG) */
 
