@@ -20,4 +20,5 @@ for sql in "${SQL_FILES[@]}"; do
   fi
 done
 
-echo "Test data insertion complete!"
+echo "   --> Test data insertion complete! \n 
+    Connect: docker exec -it postgres psql -U admin -d krautundrueben"

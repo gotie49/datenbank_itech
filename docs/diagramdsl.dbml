@@ -69,6 +69,17 @@ Table REZEPT_ZUTAT {
   EINHEIT varchar(20)
 }
 
+Table REZEPT_ALLERGENE {
+    REZEPT_ID 		int [pk, ref: > REZEPT.REZEPT_ID]
+    ALLERGEN_ID 	int [pk, ref: > ALLERGENE.ALLERGEN_ID]	
+}
+
+Table ALLERGENE {
+    ALLERGEN_ID serial [pk]
+    BEZEICHNUNG varchar(50)
+    BESCHREIBUNG text 
+}
+
 Table KUNDE_AUDIT {
   AUDIT_ID serial [pk]
   KUNDENNR integer

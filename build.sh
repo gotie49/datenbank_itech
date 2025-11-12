@@ -44,4 +44,4 @@ for sql in createTable.sql createRolesAndProcedures.sql; do
   docker exec -i "$CONTAINER_NAME" psql -U "$DB_USER" -d "$DB_NAME" < "$sql"
 done
 
-echo "postgresql is fully ready!"
+echo "   --> postgresql is fully ready!"

@@ -1,8 +1,8 @@
 Datenbank Challenge I ITech
 
-- Run the build script to setup the database and test data: 
+- Run the init script to setup the database and test data: 
 ```bash
-./build.sh
+./init.sh
 ```
 
 - Connect:

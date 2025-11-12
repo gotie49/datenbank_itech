@@ -1,7 +1,7 @@
 /*Fachliche Anforderungen an die SQL-Statements */
 
 /* Zutaten eines Rezepts abrufen: Stellt eine Abfrage bereit, mit der alle Zutaten eines ausgewählten Rezepts sowie den jeweiligen Mengenangaben angezeigt werden. */
-SELECT REZEPT.name, ZUTAT.bezeichnung, REZEPT_ZUTAT.menge 
+SELECT REZEPT.NAME, ZUTAT.bezeichnung, REZEPT_ZUTAT.menge 
     FROM REZEPT_ZUTAT 
     JOIN REZEPT ON REZEPT.rezept_id = REZEPT_ZUTAT.rezept_id
     JOIN ZUTAT ON ZUTAT.zutatennr = REZEPT_ZUTAT.zutatennr
@@ -22,25 +22,17 @@ SELECT ERNAEHRUNGSKATEGORIE.bezeichnung, COUNT(*) as anzahl_rezepte
 
 /* Durchschnittliche Naehrwerte berechnen: Berechnet die durchschnittlichen Naehrwerte (Kalorien, Proteine, Kohlenhydrate, Fett etc.) pro Bestellung für alle Bestellungen eines Kunden. */
 /* Ayman */
-SELECT 
-    ROUND(AVG(protein),2)        AS avg_protein, 
-    ROUND(AVG(kalorien),2)       AS avg_kalorien, 
-    ROUND(AVG(kohlenhydrate),2)  AS avg_kohle
-FROM (
-    SELECT b.bestellnr,
-           SUM(z.kalorien      * rz.menge * br.menge) AS kalorien,
-           SUM(z.kohlenhydrate * rz.menge * br.menge) AS kohlenhydrate,
-           SUM(z.protein       * rz.menge * br.menge) AS protein
-    FROM bestellung b
-    JOIN bestellungrezept br 
-        ON b.bestellnr = br.bestellnr
-    JOIN rezept_zutat rz 
-        ON br.rezept_id = rz.rezept_id
-    JOIN zutat z 
-        ON rz.zutatennr = z.zutatennr
-    WHERE b.kundennr IN ('$BESTELLUNG-KUNDENNR')
-    GROUP BY b.bestellnr
-) AS order_sum;
+    SELECT ROUND(AVG(protein),2) as avg_protein, ROUND(AVG(kalorien),2) as avg_kalorien, ROUND(AVG(kohlenhydrate),2) as avg_kohle FROM (
+	SELECT BESTELLUNG.bestellnr, 
+    		SUM(ZUTAT.kalorien * BESTELLUNGZUTAT.menge) as kalorien, 
+    		SUM(ZUTAT.kohlenhydrate * BESTELLUNGZUTAT.menge) as kohlenhydrate, 
+    		SUM(ZUTAT.protein * BESTELLUNGZUTAT.menge) as protein
+	FROM BESTELLUNG
+    		JOIN BESTELLUNGZUTAT ON BESTELLUNG.bestellnr = BESTELLUNGZUTAT.bestellnr
+    		JOIN ZUTAT ON BESTELLUNGZUTAT.zutatennr = ZUTAT.zutatennr
+    		WHERE BESTELLUNG.kundennr IN ('$BESTELLUNG-KUNDENNR')
+    		GROUP BY BESTELLUNG.bestellnr
+	) AS order_sum;
 
 /* Unverknuepfte Zutaten identifizieren: Findet alle Zutaten, die bisher keinem Rezept zugeordnet sind. */
 SELECT ZUTAT.zutatennr, ZUTAT.bezeichnung 
@@ -78,7 +70,7 @@ SELECT REZEPT.name, COUNT(*) as anzahl_zutaten
 SELECT 
     R.REZEPT_ID,
     R.NAME AS REZEPTNAME,
-    SUM(Z.NETTOPREIS * RZ.MENGE) AS REZEPTKOSTEN
+    ROUND(SUM(Z.NETTOPREIS * RZ.MENGE),2) AS REZEPTKOSTEN
 FROM REZEPT R
 JOIN REZEPT_ZUTAT RZ ON R.REZEPT_ID = RZ.REZEPT_ID
 JOIN ZUTAT Z ON RZ.ZUTATENNR = Z.ZUTATENNR
